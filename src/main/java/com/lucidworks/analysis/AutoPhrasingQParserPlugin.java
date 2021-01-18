@@ -1,22 +1,16 @@
 package com.lucidworks.analysis;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.core.LowerCaseFilter;
 import org.apache.lucene.analysis.core.StopFilter;
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
-import org.apache.lucene.analysis.core.LowerCaseFilter;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.analysis.util.ResourceLoader;
 import org.apache.lucene.analysis.util.ResourceLoaderAware;
 import org.apache.lucene.analysis.util.WordlistLoader;
-import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.params.ModifiableSolrParams;
+import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.util.NamedList;
 import org.apache.solr.request.SolrQueryRequest;
 import org.apache.solr.search.QParser;
@@ -24,7 +18,12 @@ import org.apache.solr.search.QParserPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 public class AutoPhrasingQParserPlugin extends QParserPlugin implements ResourceLoaderAware {
@@ -110,13 +109,14 @@ public class AutoPhrasingQParserPlugin extends QParserPlugin implements Resource
     }
 
     private String autophrase(String input) throws IOException {
-        WhitespaceTokenizer wt = new WhitespaceTokenizer(new StringReader(input));
+        WhitespaceTokenizer wt = new WhitespaceTokenizer();
+        wt.setReader(new StringReader(input));
         TokenStream ts = wt;
         if (ignoreCase) {
             ts = new LowerCaseFilter(wt);
         }
         AutoPhrasingTokenFilter aptf = new AutoPhrasingTokenFilter(ts, phraseSets, false);
-        aptf.setReplaceWhitespaceWith(new Character(replaceWhitespaceWith));
+        aptf.setReplaceWhitespaceWith(replaceWhitespaceWith);
         CharTermAttribute term = aptf.addAttribute(CharTermAttribute.class);
         aptf.reset();
 
@@ -135,9 +135,11 @@ public class AutoPhrasingQParserPlugin extends QParserPlugin implements Resource
         }
     }
 
-    private CharArraySet getWordSet(ResourceLoader loader,
-                                    String wordFiles, boolean ignoreCase)
-            throws IOException {
+    private CharArraySet getWordSet(
+            ResourceLoader loader,
+            String wordFiles,
+            boolean ignoreCase
+    ) throws IOException {
         List<String> files = splitFileNames(wordFiles);
         CharArraySet words = null;
         if (files.size() > 0) {
@@ -158,7 +160,7 @@ public class AutoPhrasingQParserPlugin extends QParserPlugin implements Resource
 
     private List<String> splitFileNames(String fileNames) {
         if (fileNames == null)
-            return Collections.<String>emptyList();
+            return Collections.emptyList();
 
         List<String> result = new ArrayList<>();
         for (String file : fileNames.split("(?<!\\\\),")) {
