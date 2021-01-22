@@ -13,7 +13,7 @@ The Autophrasing filter can be combined with a synonym filter to handle cases in
 suffix terms in a phrase are synonymous with the phrase, but where other parts of the phrase are
 not. This enables searching within the phrase to occur selectively, rather than randomly.
 
-##Overview
+## Overview
 
 Search engines work by 'inverse' mapping terms or 'tokens' to the documents that contain
 them. Sometimes a single token uniquely describes a real-world entity or thing but in many
@@ -24,7 +24,7 @@ this type of ambiguity - search engines return documents that contain the words 
 necessarily the 'things' they are looking for. Doing a better job of mapping tokens (the 'units'
 of a search index) to specific things or concepts will help to address this problem.
 
-##Algorithm
+## Algorithm
 
 The auto phrase token filter uses a list of phrases that should be kept together as single 
 tokens. As tokens are received by the filter, it keeps a partial phrase that matches 
@@ -54,7 +54,7 @@ leading terms in its phrase list, it will be passed on to the next filter unmole
 &lt;/fieldType>
 </pre>
 
-##Input Parameters:
+## Input Parameters:
 
 <table>
  <tr><td>phrases</td><td>file containing auto phrases (one per line)</td><tr>
@@ -62,7 +62,7 @@ leading terms in its phrase list, it will be passed on to the next filter unmole
  <tr><td>replaceWhitespaceWith</td><td>single character to use to replace whitespace in phrase</td></tr>
 </table>
 
-##Query Parser Plugin
+## Query Parser Plugin
 
 Due to an issue with Lucene/Solr query parsing, the AutoPhrasingTokenFilter is not effective at query time as
 part of a standard analyzer chain. This is due to the LUCENE-2605 issue in which the query parser sends each token
@@ -92,7 +92,7 @@ And a new search handler that uses the query parser:
   &lt;/requestHandler>
 </pre>
 
-##Example Test Code:
+## Example Test Code:
 
 The following Java code can be used to show what the AutoPhrasingTokenFilter does:
 
@@ -143,7 +143,7 @@ token:'so'
 token:'high'
 </pre>
 
-##Deployment Procedure:
+## Deployment Procedure:
 
 To build the autophrasing token filter from source code you will need to install Apache Maven (https://maven.apache.org/download.cgi). Install Maven and then in a linux/unix shell or Windows DOS command window, change to the auto-phrase-tokenfilter directory (i.e. where you downloaded this project to) and type: mvn package
 
